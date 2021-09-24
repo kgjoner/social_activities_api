@@ -12,6 +12,7 @@ export interface IActivity {
 	description?: string;
 	image?: string;
 	permalink?: string;
+	reverted?: boolean;
 }
 
 export type IActivityDoc = IActivity & mongoose.Document<any, any, IActivity>;
@@ -49,6 +50,7 @@ export const activitySchema = new mongoose.Schema<IActivity>({
 	title: String,
 	image: String,
 	permalink: String,
+	reverted: Boolean,
 });
 
 export const Activity = mongoose.model<IActivity>('Activity', activitySchema);

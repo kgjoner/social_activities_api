@@ -111,23 +111,22 @@ async function followUser(
 		await UserDataAccess.save(actor);
 		await UserDataAccess.save(target);
 
-		if (!reverse) {
-			await ActivityController.insertActivity(
-				{
-					actor: actorUsername,
-					action: 'follow',
-					target: targetUsername,
-					type: 'user',
-				},
-				actor.followers || []
-			);
+		const activity = {
+			actor: actorUsername,
+			action: 'follow',
+			target: targetUsername,
+			type: 'user',
+		} as const;
 
-			await FeedController.mergeUserActivitiesIntoAnothersFeed(
+		if (reverse) {
+			await ActivityController.revertActivity(activity);
+			await FeedController.clearUserActivitiesFromAnothersFeed(
 				targetUsername,
 				actorUsername
 			);
 		} else {
-			await FeedController.clearUserActivitiesFromAnothersFeed(
+			await ActivityController.insertActivity(activity, actor.followers || []);
+			await FeedController.mergeUserActivitiesIntoAnothersFeed(
 				targetUsername,
 				actorUsername
 			);

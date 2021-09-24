@@ -11,6 +11,12 @@ async function insertActivity(
 	await FeedController.fanout(activityId, followers);
 }
 
+async function revertActivity(rawActivity: IActivity): Promise<void> {
+	const activity = await ActivityDataAccess.findOne(rawActivity);
+	activity.reverted = true;
+	await ActivityDataAccess.update(activity);
+}
+
 async function getActivities(req: Request, res: Response): Promise<void> {
 	try {
 		const activities = await ActivityDataAccess.listAll();
@@ -23,5 +29,6 @@ async function getActivities(req: Request, res: Response): Promise<void> {
 
 export const ActivityController = {
 	insertActivity,
+	revertActivity,
 	getActivities,
 };

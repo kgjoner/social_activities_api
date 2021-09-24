@@ -14,9 +14,9 @@ async function fanout(activityId: string, followers: string[]): Promise<void> {
 
 async function denormalizeFeed(normalizedFeed: Feed): Promise<IActivity[]> {
 	const feedPromise = normalizedFeed.list.map(async activityId => {
-		return await ActivityDataAccess.findOne(activityId);
+		return await ActivityDataAccess.findById(activityId);
 	});
-	return Promise.all(feedPromise);
+	return Promise.all(feedPromise).then((feed) => feed.filter((a) => !a.reverted));
 }
 
 async function mergeUserActivitiesIntoAnothersFeed(

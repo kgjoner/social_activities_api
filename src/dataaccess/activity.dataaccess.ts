@@ -17,16 +17,16 @@ async function create(rawActivity: IActivity): Promise<string> {
 	}
 }
 
-async function findOne(activityId: string): Promise<IActivityDoc> {
-	validateFieldsExistence({ activityId });
+async function update(activity: IActivityDoc): Promise<string> {
+	validateFieldsExistence(activity, ['actor', 'action', 'target', 'type']);
 
-	const user = await Activity.findById(activityId).exec();
+	try {
+		await activity.save();
 
-	if (!user) {
-		throw new FormattedError(ErrorTypes.NotFound, 'Atividade não encontrada.');
+		return activity._id;
+	} catch (err) {
+		throw new FormattedError(ErrorTypes.DatabaseError, err);
 	}
-
-	return user;
 }
 
 async function listAll(): Promise<IActivityDoc[]> {
@@ -49,9 +49,35 @@ async function listByActor(actor: string): Promise<IActivityDoc[]> {
 	}
 }
 
+async function findById(activityId: string): Promise<IActivityDoc> {
+	validateFieldsExistence({ activityId });
+
+	const activity = await Activity.findById(activityId).exec();
+
+	if (!activity) {
+		throw new FormattedError(ErrorTypes.NotFound, 'Atividade não encontrada.');
+	}
+
+	return activity;
+}
+
+async function findOne(rawActivity: IActivity): Promise<IActivityDoc> {
+	validateFieldsExistence(rawActivity, ['actor', 'action', 'target', 'type']);
+
+	const activity = await Activity.findOne(rawActivity).sort({ datetime: -1 }).exec();
+
+	if (!activity) {
+		throw new FormattedError(ErrorTypes.NotFound, 'Atividade não encontrada.');
+	}
+
+	return activity;
+}
+
 export const ActivityDataAccess = {
 	create,
-	findOne,
+  update,
 	listAll,
 	listByActor,
+  findById,
+	findOne,
 };
