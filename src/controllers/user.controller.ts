@@ -195,6 +195,42 @@ async function likeComic(
 	}
 }
 
+async function readComic(req: Request, res: Response): Promise<void> {
+	let { username: actorUsername } = req.query;
+	const { comic } = req.params;
+	actorUsername = actorUsername.toString();
+
+	try {
+		validateFieldsExistence({ username: actorUsername });
+
+		const actor = await UserDataAccess.findOne(actorUsername);
+
+		if (actor.readings.includes(comic)) {
+			throw new FormattedError(
+				ErrorTypes.RedundantAction,
+				`${comic} já está entre as leituras de ${actorUsername}`
+			);
+		}
+
+		actor.readings.push(comic);
+
+		await UserDataAccess.save(actor);
+
+		const activity = {
+			actor: actorUsername,
+			action: 'read',
+			target: comic,
+			type: 'comic',
+		} as const;
+
+		await ActivityController.insertActivity(activity, actor.followers || []);
+
+		res.status(204).send();
+	} catch (err) {
+		res.status(err.status).send(err);
+	}
+}
+
 export const UserController = {
 	insertUser,
 	updateUser,
@@ -203,4 +239,5 @@ export const UserController = {
 	getFollowers,
 	followUser,
 	likeComic,
+	readComic,
 };

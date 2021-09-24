@@ -42,4 +42,8 @@ export function registerRoutes(app: Express): void {
 		.delete((req, res, next) =>
 			UserController.likeComic(req, res, next, { reverse: true })
 		);
+
+	app
+		.route('/comics/:comic/readings')
+		.post(UserController.readComic);
 }

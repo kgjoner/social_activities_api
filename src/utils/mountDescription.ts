@@ -17,7 +17,7 @@ export function mountDescription(activity: IActivity): string {
 
 	if (activity.action === ACTIONS.READ) {
 		return `
-      @${activity.actor} leu @${activity.target}
+      @${activity.actor} começou a ler @${activity.target}
     `;
 	}
 
