@@ -7,6 +7,7 @@ export interface IUser {
 	picture?: string;
 	followers?: string[];
 	following?: string[];
+	favoriteComics?: string[];
 }
 
 export type IUserDoc = IUser & mongoose.Document<any, any, IUser>;
@@ -24,6 +25,7 @@ export const userSchema = new mongoose.Schema<IUser>({
 	picture: String,
 	followers: [String],
 	following: [String],
+	favoriteComics: [String],
 });
 
 export const User = mongoose.model<IUser>('User', userSchema);

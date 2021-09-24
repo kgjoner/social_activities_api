@@ -35,4 +35,11 @@ export function registerRoutes(app: Express): void {
 		.delete((req, res, next) =>
 			UserController.followUser(req, res, next, { reverse: true })
 		);
+
+	app
+		.route('/comics/:comic/likes')
+		.post(UserController.likeComic)
+		.delete((req, res, next) =>
+			UserController.likeComic(req, res, next, { reverse: true })
+		);
 }
