@@ -11,6 +11,10 @@ export function registerRoutes(app: Express): void {
 		.get(ActivityController.getActivities);
 
 	app
+		.route('/activities/:username')
+		.get(ActivityController.getActivitiesDoneByAnUser);
+
+	app
 		.route('/feed/:username')
 		.get(FeedController.getFeed);
 

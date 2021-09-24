@@ -27,8 +27,21 @@ async function getActivities(req: Request, res: Response): Promise<void> {
 	}
 }
 
+async function getActivitiesDoneByAnUser(req: Request, res: Response): Promise<void> {
+	const { username } = req.params;
+
+	try {
+		const activities = await ActivityDataAccess.listByActor(username);
+
+		res.json(activities.filter((a) => !a.reverted));
+	} catch (err) {
+		res.status(err.status).send(err);
+	}
+}
+
 export const ActivityController = {
 	insertActivity,
 	revertActivity,
 	getActivities,
+	getActivitiesDoneByAnUser,
 };
