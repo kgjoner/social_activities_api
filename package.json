@@ -1,0 +1,47 @@
+{
+  "name": "social-activities-api",
+  "version": "0.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "private": true,
+  "scripts": {
+    "prebuild": "eslint src/ --env node --ext .ts",
+    "build": "tsc",
+    "prestart": "npm run build",
+    "start": "node .",
+    "dev": "ts-node-dev --files src/index.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kaio Gabriel",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv-safe": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^4.1.1",
+    "lodash": "^4.17.21",
+    "mongoose": "^5.13.9",
+    "promise-redis": "0.0.5",
+    "uuid": "^8.3.1"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.2",
+    "@types/cors": "^2.8.8",
+    "@types/dotenv-safe": "^8.1.1",
+    "@types/express": "^4.17.8",
+    "@types/helmet": "0.0.48",
+    "@types/knex": "^0.16.1",
+    "@types/lodash": "^4.14.162",
+    "@types/mongoose": "^5.7.36",
+    "@types/node": "^14.11.10",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.4.1",
+    "@typescript-eslint/parser": "^4.4.1",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "ts-node-dev": "^1.0.0",
+    "typescript": "^4.0.3"
+  }
+}
