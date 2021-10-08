@@ -3,15 +3,29 @@ import FormattedError, { ErrorTypes } from '../models/error.model';
 import { UserDataAccess } from '../dataaccess/user.dataaccess';
 import { ActivityController } from './activity.controller';
 import { validateFieldsExistence } from '../utils/validators';
-import lodash from 'lodash';
 import { FeedController } from './feed.controller';
+import mqPromise from '../amqp';
+import lodash from 'lodash';
+
+async function createUserQueue(username: string) {
+	try {
+		const mq = await mqPromise;
+		mq.channel.assertQueue(username, { durable: true });
+		mq.channel.consume(username, (msg) => {
+			FeedController.addToFeed(username, msg.content.toString());
+		}, { noAck: true })
+	} catch(err) {
+		throw new FormattedError(ErrorTypes.MessagingError, err);
+	}
+}
 
 async function insertUser(req: Request, res: Response): Promise<void> {
 	const body = req.body;
 
 	try {
 		await UserDataAccess.create(body);
-
+		await createUserQueue(body.username);
+	
 		res.status(204).send();
 	} catch (err) {
 		res.status(err.status).send(err);
@@ -118,14 +132,18 @@ async function followUser(
 			type: 'user',
 		} as const;
 
+		const mq = await mqPromise;
+
 		if (reverse) {
+			mq.channel.unbindQueue(actorUsername, mq.exchange, targetUsername);
 			await ActivityController.revertActivity(activity);
 			await FeedController.clearUserActivitiesFromAnothersFeed(
 				targetUsername,
 				actorUsername
 			);
 		} else {
-			await ActivityController.insertActivity(activity, actor.followers || []);
+			mq.channel.bindQueue(actorUsername, mq.exchange, targetUsername);
+			await ActivityController.insertActivity(activity);
 			await FeedController.mergeUserActivitiesIntoAnothersFeed(
 				targetUsername,
 				actorUsername
@@ -186,7 +204,7 @@ async function likeComic(
 		if (reverse) {
 			await ActivityController.revertActivity(activity);
 		} else {
-			await ActivityController.insertActivity(activity, actor.followers || []);
+			await ActivityController.insertActivity(activity);
 		}
 
 		res.status(204).send();
@@ -223,7 +241,7 @@ async function readComic(req: Request, res: Response): Promise<void> {
 			type: 'comic',
 		} as const;
 
-		await ActivityController.insertActivity(activity, actor.followers || []);
+		await ActivityController.insertActivity(activity);
 
 		res.status(204).send();
 	} catch (err) {
@@ -232,6 +250,7 @@ async function readComic(req: Request, res: Response): Promise<void> {
 }
 
 export const UserController = {
+	createUserQueue,
 	insertUser,
 	updateUser,
 	getUsers,

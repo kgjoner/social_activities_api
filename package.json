@@ -15,6 +15,7 @@
   "author": "Kaio Gabriel",
   "license": "UNLICENSED",
   "dependencies": {
+    "amqplib": "^0.8.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv-safe": "^8.2.0",
@@ -26,6 +27,7 @@
     "uuid": "^8.3.1"
   },
   "devDependencies": {
+    "@types/amqplib": "^0.8.2",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.8",
     "@types/dotenv-safe": "^8.1.1",

@@ -9,6 +9,7 @@ import { registerRoutes } from './routes';
 
 import './connection';
 import './redis';
+import './amqp';
 
 const PORT: number = parseInt(process.env.PORT as string, 10);
 

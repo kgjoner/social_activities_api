@@ -5,6 +5,7 @@ export enum ErrorTypes {
 	'DatabaseError' = 4,
 	'NotFound' = 5,
 	'RedundantAction' = 6,
+	'MessagingError' = 7,
 }
 
 const errorStatus = {
@@ -14,6 +15,7 @@ const errorStatus = {
 	DatabaseError: 500,
 	NotFound: 404,
 	RedundantAction: 409,
+	MessagingError: 500,
 } as const;
 
 export default class FormattedError {

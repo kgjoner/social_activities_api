@@ -4,12 +4,10 @@ import { Feed } from '../models/feed.model';
 import { FeedDataAccess } from '../dataaccess/feed.dataaccess';
 import { ActivityDataAccess } from '../dataaccess/activity.dataaccess';
 
-async function fanout(activityId: string, followers: string[]): Promise<void> {
-	followers.forEach(async username => {
-		const feed = await FeedDataAccess.findOne(username);
-		feed.list.unshift(activityId);
-		await FeedDataAccess.save(feed);
-	});
+async function addToFeed(username: string, activityId: string) {
+	const feed = await FeedDataAccess.findOne(username);
+	feed.list.unshift(activityId);
+	await FeedDataAccess.save(feed);
 }
 
 async function denormalizeFeed(normalizedFeed: Feed): Promise<IActivity[]> {
@@ -28,10 +26,7 @@ async function mergeUserActivitiesIntoAnothersFeed(
 	const denormalizedFeed = await denormalizeFeed(feed);
 
 	feed.list = [...actorActivities, ...denormalizedFeed]
-		.sort((a, b) => {
-			console.log(a.datetime, b.datetime);
-			return a.datetime > b.datetime ? -1 : 1;
-		})
+		.sort((a, b) => a.datetime > b.datetime ? -1 : 1)
 		.map(a => a._id);
 
 	FeedDataAccess.save(feed);
@@ -64,7 +59,7 @@ async function getFeed(req: Request, res: Response): Promise<void> {
 }
 
 export const FeedController = {
-	fanout,
+	addToFeed,
 	getFeed,
 	mergeUserActivitiesIntoAnothersFeed,
 	clearUserActivitiesFromAnothersFeed,
